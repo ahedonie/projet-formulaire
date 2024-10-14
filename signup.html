@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulaire d'inscription</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+        }
+        .form-container {
+            background-color: #ffffff; /* Couleur de fond bleu cyan */
+            width: 300px;
+            margin: 100px auto;
+            padding: 3%;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            color: rgb(177, 0, 136);
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="password"], input[type="email"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        input[type="submit"], input[type="reset"] {
+            width: 100px;
+            padding: 8px;
+            margin: 5px;
+            border: none;
+            background-color: #ea00ff;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        input[type="submit"]:hover, input[type="reset"]:hover {
+            background-color: lightgrey;
+        }
+        .button-container {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <h2>Formulaire d'inscription</h2>
+        <form action="process_form.php" method="POST">
+
+            <label for="pseudo">Pseudonyme :</label>
+            <input type="text" id="pseudo" name="pseudo" required>
+
+            <label for="password">Mot de passe :</label>
+            <input type="password" id="password" name="password" required>
+
+            <label for="confirm-password">Confirmation :</label>
+            <input type="password" id="confirm-password" name="confirm-password" required>
+
+            <label for="email">Courriel :</label>
+            <input type="email" id="email" name="email" required>
+
+            <div class="button-container">
+                <input type="submit" value="Envoyer">
+                <input type="reset" value="Rafraîchir">
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>

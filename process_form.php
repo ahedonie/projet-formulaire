@@ -1,49 +1,56 @@
 <?php
-// Informations de connexion à la base de données
-$servername = "localhost";  // Serveur MySQL
-$username = "root";         // Nom d'utilisateurgit push -u origin main
-$password = "";             // Mot de passe MySQL
-$dbname = "bisounours";     // Nom de la base de données
+// info bdd
+$serveur = "localhost";      // Serveur MySQL
+$utilisateur = "root";       // Nom d'utilisateur MySQL
+$mdpBDD = "";         // Mot de passe MySQL (ici, il est vide)
+$nomBDD = "bisounours";      // Nom de la base de données
 
-// Connexion à la base de données MySQL
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Vérification de la connexion
-if ($conn->connect_error) {
-    die("Échec de la connexion : " . $conn->connect_error);
+try {
+    // connexion a la bdd via le PDO et non via mysqli 
+    $connexion = new PDO("mysql:host=$serveur;dbname=$nomBDD;charset=utf8", $utilisateur, $mdpBDD);
+    // configuration du pdo pour afficher les erreurs
+    $connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    // si on ne peut pas se connecter a la bdd, alors le message suivant s'affiche
+    die("Erreur de connexion à la base de données : " . $e->getMessage());
 }
 
-// Vérifier si le formulaire a été soumis
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Récupération des données du formulaire
-    $pseudo = $_POST["pseudo"];
-    $email = $_POST["email"];
-    $password = $_POST["password"];
-    $confirm_password = $_POST["confirm-password"];
+    // on recup les données du formulaire html
+    $nomUtilisateur = $_POST["pseudo"];       // conf du pseudo
+    $emailUtilisateur = $_POST["email"];      // conf de l'email
+    $mdp = $_POST["password"];         // conf du mot de pass
+    $confirmerMotDePasse = $_POST["confirm-password"];  // confirm du mdp
 
-    // Vérifier si les mots de passe correspondent
-    if ($password === $confirm_password) {
-        // Hachage du mot de passe avant l'insertion dans la base de données
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+    // Vérifier si les deux mots de passe sont identiques
+    if ($mdp === $confirmerMotDePasse) {
+       
+        $mdpCrypte = password_hash($mdp, PASSWORD_DEFAULT);
 
-        // Préparation de la requête SQL pour insérer les données dans la table utilisateurs
-        $stmt = $conn->prepare("INSERT INTO utilisateurs (pseudo, email, mot_de_passe, date_inscription) VALUES (?, ?, ?, NOW())");
-        $stmt->bind_param("sss", $pseudo, $email, $hashed_password);
+        $requeteSQL = $connexion->prepare("INSERT INTO utilisateurs (pseudo, email, mot_de_passe, date_inscription) VALUES (:pseudo, :email, :mot_de_passe, NOW())");
 
-        // Exécuter la requête
-        if ($stmt->execute()) {
+        $requeteSQL->bindParam(':pseudo', $nomUtilisateur);
+        $requeteSQL->bindParam(':email', $emailUtilisateur);
+        $requeteSQL->bindParam(':mot_de_passe', $mdpCrypte);
+
+        // une fois toutes les infos rentrés, soit l'inscription se passe bien et 'inscription réussie" soit non et alors le message d'erreur s'affiche
+        if ($requeteSQL->execute()) {
             echo "Inscription réussie !";
         } else {
-            echo "Erreur lors de l'inscription : " . $stmt->error;
+            echo "Erreur lors de l'inscription.";
         }
-
-        // Fermer la déclaration
-        $stmt->close();
     } else {
-        echo "Les mots de passe ne correspondent pas.";
+        echo "Les mots de passe ne sont pas identiques. Veuillez réessayer.";
     }
 }
 
-// Fermer la connexion
-$conn->close();
+
+
+            // source : 
+            //www.php.net/manual/fr/pdostatement.bindparam.php
+            //www.php.net/manual/fr/pdo.prepare.php
+            //www.pierre-giraud.com/php-mysql-apprendre-coder-cours/requete-preparee/
+            //www.php.net/manual/fr/book.pdo.php
+            // et mon ancien code 
 ?>
